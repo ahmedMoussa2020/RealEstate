@@ -4,11 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-
 import org.springframework.stereotype.Service;
-import com.example.demo.jdbc.UserBean;
-import com.example.demo.jdbc.UserDao;
 import com.example.demo.jpa.User;
 import com.example.demo.repository.UserRepository;
 

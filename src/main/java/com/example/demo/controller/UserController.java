@@ -3,18 +3,20 @@ package com.example.demo.controller;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.demo.jdbc.UserBean;
+import com.example.demo.jpa.User;
 import com.example.demo.service.UserService;
 
+
+@CrossOrigin(exposedHeaders = "Authorization")
 @RestController // annotation tells Spring that a class is a Controller and will process user
 				// requests.
 @RequestMapping("/user") // annotation maps requests to handlers. In this case, requests with the /user
@@ -26,6 +28,7 @@ public class UserController {
 
 	// The @Autowired annotation tells Spring to inject a UserService instance into
 	// the userService variable:
+	
 	@Autowired
 	UserService userService;
 
@@ -38,12 +41,13 @@ public class UserController {
 
 		// Return the string "The FeedApp application is up and running" from the
 		// testController() method, as shown below.
-		return "The Web application is up and running";
+		
+		return "The Adnan Real Estate application is up and running";
 	}
 
 	@GetMapping("/")
 	// listUsers() method to get all the existing Users in the database:
-	public List<UserBean> listUsers() {
+	public List<User> listUsers() {
 		logger.debug("The listUsers() method was invoked!");
 		return this.userService.listUsers();
 	}
@@ -53,7 +57,8 @@ public class UserController {
 
 	// The @PathVariable annotation handles template variables in the request URI
 	// mapping and sets them as method parameters:
-	public UserBean findByUsername(@PathVariable String username) {
+	
+	public Optional<User> findByUsername(@PathVariable String username) {
 
 		logger.debug("The findByUsername() method was invoked!, username={}", username);
 		return this.userService.findByUsername(username);
@@ -67,7 +72,7 @@ public class UserController {
 	public String createUser(@PathVariable String first, @PathVariable String last, @PathVariable String username,
 			@PathVariable String password, @PathVariable String phone, @PathVariable String emailId) {
 
-		UserBean user = new UserBean();
+		User user = new User();
 
 		user.setFirstName(first);
 		user.setLastName(last);
@@ -83,6 +88,7 @@ public class UserController {
 		this.userService.createUser(user);
 
 		return "User Created Successfully";
+
 	}
 
 }
