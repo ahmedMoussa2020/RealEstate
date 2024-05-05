@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.demo.jpa.User;
 import com.example.demo.repository.UserRepository;
-
+import java.sql.Timestamp;
+import java.time.Instant;
 //This activity aims to implement a UserService class that contains business logic and calls UserDao to access the data stored in our User database table.
 @Service
 public class UserService {
@@ -31,5 +32,20 @@ public class UserService {
 
 	public void createUser(User user) {
 		this.userRepository.save(user);
+	}
+	
+	public User signup(User user){
+		
+		//  convert the username and emailId fields of the input user object to lowercase using the toLowerCase() 
+		user.setUsername(user.getUsername().toLowerCase());
+		user.setEmailId(user.getEmailId().toLowerCase());
+		
+		user.setEmailVerified(false);
+		// Use the setCreatedOn method of the User object to set the createdOn field to the current timestamp using the Timestamp.from(Instant.now()) method.
+		user.setCreatedOn(Timestamp.from(Instant.now()));
+		// User object - The modified User object should then be saved to the database using the save() method of the UserRepository.
+		this.userRepository.save(user);
+		
+		return user;
 	}
 }
