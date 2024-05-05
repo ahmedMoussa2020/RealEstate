@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.jpa.User;
 import com.example.demo.service.UserService;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin(exposedHeaders = "Authorization")
 @RestController // annotation tells Spring that a class is a Controller and will process user
@@ -89,6 +90,16 @@ public class UserController {
 
 		return "User Created Successfully";
 
+	}
+	
+	
+	//  signup() method in the UserController class with @PostMapping("/signup") to indicate that it handles HTTP POST requests to the "/signup" endpoint of the REST API.
+	@PostMapping("/signup")
+	public User signup(@RequestBody User user) {
+		logger.debug("Signing up, username: {}", user.getUsername());
+		
+		// we have to pass the User object to the signup method in the UserService class, and return the User object returned by the signup() method in the UserService class.  
+		return this.userService.signup(user);
 	}
 
 }
