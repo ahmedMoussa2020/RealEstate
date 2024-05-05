@@ -1,45 +1,47 @@
 package com.example.demo.service;
 
-
-import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
+
+
+import org.slf4j.Logger;
+
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.thymeleaf.context.Context;
 
 import com.example.demo.jpa.User;
 import com.example.demo.provider.ResourceProvider;
 import com.example.demo.security.JwtService;
 
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
-import org.thymeleaf.context.Context;
 import jakarta.mail.internet.MimeMessage;
 
-// annotation to indicate that it is a Spring service component:
 @Service
 public class EmailService {
-	
+
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	@Value("${spring.mail.username}")
 	private String emailFrom;
-	
+
 	@Autowired
 	JwtService jwtService;
-		
+
 	@Autowired
 	ResourceProvider provider;
 
 	@Autowired
 	TemplateEngine templateEngine;
-		
+
 	@Autowired
-	JavaMailSender javaMailSender;	
-	
-	
+	JavaMailSender javaMailSender;
+
+
+
 	private void sendEmail(User user, String clientParam, String templateName, String emailSubject, long expiration) {
 
 		try {
@@ -58,7 +60,7 @@ public class EmailService {
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
 			/* Set Email Information */
-			helper.setFrom(this.emailFrom, "FeedApp - Obsidi Academy");
+			helper.setFrom(this.emailFrom, "GOLDEN STREET RESIDENCY\n");
 			helper.setSubject(emailSubject);
 			helper.setText(process, true);
 			helper.setTo(user.getEmailId());
@@ -76,10 +78,16 @@ public class EmailService {
 	
 	@Async
 	public void sendVerificationEmail(User user) {
+
+		this.sendEmail(user, this.provider.getClientVerifyParam(), "verify_email",
+				String.format("Welcome %s %s", user.getFirstName(), user.getLastName()),
+				this.provider.getClientVerifyExpiration());
+	}
+	
+	@Async
+	public void sendResetPasswordEmail(User user) {
 			
-		this.sendEmail(user, this.provider.getClientVerifyParam(),"verify_email", 
-		String.format("Welcome %s %s",user.getFirstName(),user.getLastName()), 
-					      this.provider.getClientVerifyExpiration());
+		this.sendEmail(user, this.provider.getClientResetParam(), "reset_password", "Reset your password", this.provider.getClientResetExpiration());
 	}	
 
 }
