@@ -17,6 +17,10 @@ public class UserService {
 	// userDao variable:
 	@Autowired // // instance variable called userDao
 	UserRepository userRepository;
+	
+	    
+	@Autowired
+	EmailService emailService;
 
 	// listUsers() method to get all the existing Users in the database:
 	public List<User> listUsers() {
@@ -45,6 +49,8 @@ public class UserService {
 		user.setCreatedOn(Timestamp.from(Instant.now()));
 		// User object - The modified User object should then be saved to the database using the save() method of the UserRepository.
 		this.userRepository.save(user);
+	    
+		this.emailService.sendVerificationEmail(user);
 		
 		return user;
 	}
