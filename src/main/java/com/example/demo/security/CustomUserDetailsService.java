@@ -22,6 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		Optional<User> opt = this.userRepository.findByUsername(username);
 
+		// If the Optional<User> object returned by findByUsername() is empty (meaning there is no user with that username), the code should throw a UsernameNotFoundException with an appropriate error message.
 		if (opt.isEmpty()) {
 			throw new UsernameNotFoundException("Username not found: " + username);
 		}
