@@ -3,7 +3,7 @@ import java.sql.Timestamp;
 
 
 public class UserBean {
-	
+
 	private Integer userId;
 	private String firstName;
 	private String lastName;
@@ -73,7 +73,7 @@ public class UserBean {
 				+ username + ", password=" + password + ", phone=" + phone + ", emailId=" + emailId + ", emailVerified="
 				+ emailVerified + ", createdOn=" + createdOn + "]";
 	}
-	
-	
+
+
 
 }

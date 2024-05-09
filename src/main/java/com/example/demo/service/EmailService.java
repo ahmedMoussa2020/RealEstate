@@ -1,17 +1,14 @@
 package com.example.demo.service;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-
-
-import org.slf4j.Logger;
-
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.example.demo.jpa.User;
@@ -75,7 +72,7 @@ public class EmailService {
 			this.logger.error("Error while Sending Email, Username: " + user.getUsername(), ex);
 		}
 	}
-	
+
 	@Async
 	public void sendVerificationEmail(User user) {
 
@@ -83,11 +80,11 @@ public class EmailService {
 				String.format("Welcome %s %s", user.getFirstName(), user.getLastName()),
 				this.provider.getClientVerifyExpiration());
 	}
-	
+
 	@Async
 	public void sendResetPasswordEmail(User user) {
-			
+
 		this.sendEmail(user, this.provider.getClientResetParam(), "reset_password", "Reset your password", this.provider.getClientResetExpiration());
-	}	
+	}
 
 }

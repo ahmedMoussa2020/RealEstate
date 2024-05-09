@@ -9,5 +9,5 @@ import com.example.demo.jpa.FeedMetaData;
 // { }: The body for the interface is empty since no additional methods are defined.
 // Overall, the FeedMetaDataRepository interface extends JpaRepository and provides basic CRUD operations for the FeedMetaData entity class.
 public interface FeedMetaDataRepository extends JpaRepository<FeedMetaData, Integer> {
-	
+
 }

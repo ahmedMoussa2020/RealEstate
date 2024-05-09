@@ -4,18 +4,20 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.example.demo.jpa.User;
-import com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.jpa.User;
+import com.example.demo.service.UserService;
 
 @CrossOrigin(exposedHeaders = "Authorization")
 @RestController // annotation tells Spring that a class is a Controller and will process user
@@ -24,12 +26,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 							// parameter will be served by the UserController.
 public class UserController {
 
-//	This variable will be used from the UserController methods to print out the Controller's activity information in the console. 
+//	This variable will be used from the UserController methods to print out the Controller's activity information in the console.
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	// The @Autowired annotation tells Spring to inject a UserService instance into
 	// the userService variable:
-	
+
 	@Autowired
 	UserService userService;
 
@@ -42,7 +44,7 @@ public class UserController {
 
 		// Return the string "The FeedApp application is up and running" from the
 		// testController() method, as shown below.
-		
+
 		return "The Adnan Real Estate application is up and running";
 	}
 
@@ -58,7 +60,7 @@ public class UserController {
 
 	// The @PathVariable annotation handles template variables in the request URI
 	// mapping and sets them as method parameters:
-	
+
 	public Optional<User> findByUsername(@PathVariable String username) {
 
 		logger.debug("The findByUsername() method was invoked!, username={}", username);
@@ -91,14 +93,14 @@ public class UserController {
 		return "User Created Successfully";
 
 	}
-	
-	
+
+
 	//  signup() method in the UserController class with @PostMapping("/signup") to indicate that it handles HTTP POST requests to the "/signup" endpoint of the REST API.
 	@PostMapping("/signup")
 	public User signup(@RequestBody User user) {
 		logger.debug("Signing up, username: {}", user.getUsername());
-		
-		// we have to pass the User object to the signup method in the UserService class, and return the User object returned by the signup() method in the UserService class.  
+
+		// we have to pass the User object to the signup method in the UserService class, and return the User object returned by the signup() method in the UserService class.
 		return this.userService.signup(user);
 	}
 

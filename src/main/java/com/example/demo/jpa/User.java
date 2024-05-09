@@ -61,7 +61,7 @@ public class User implements Serializable { // Java that tells the compiler that
 	//Along with the next annotation on this list, JsonInclude() controls how null values are handled during JSON serialization.
 	// Indicates that any change to the User entity will be cascaded down to the Profile entity.
 	 // // This annotation specifies that the relationship is mapped by the user field in the Profile entity.
-	@JsonInclude(Include.NON_NULL) 
+	@JsonInclude(Include.NON_NULL)
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Profile profile;
 
