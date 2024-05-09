@@ -103,5 +103,15 @@ public class UserController {
 		// we have to pass the User object to the signup method in the UserService class, and return the User object returned by the signup() method in the UserService class.
 		return this.userService.signup(user);
 	}
+	
+	@GetMapping("/verify/email")
+	public void verifyEmail() {
+			
+		logger.debug("Verifying Email");
+		//  method of the userService object to update the email verification status.	
+		this.userService.verifyEmail();
+	}
+	
+	
 
 }
