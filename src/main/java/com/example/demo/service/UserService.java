@@ -18,6 +18,9 @@ import com.example.demo.jpa.User;
 import com.example.demo.provider.ResourceProvider;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtService;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.example.demo.exception.domain.UserNotFoundException;
+
 
 
 //This activity aims to implement a UserService class that contains business logic and calls UserDao to access the data stored in our User database table.
@@ -75,8 +78,8 @@ public class UserService {
 		this.emailService.sendVerificationEmail(user);
 
 		return user;
-}
-	
+	}
+
 	private void validateUsernameAndEmail(String username, String emailId) {
 
 		this.userRepository.findByUsername(username).ifPresent(u -> {
@@ -87,5 +90,17 @@ public class UserService {
 			throw new EmailExistException(String.format("Email already exists, %s", u.getEmailId()));
 		});
 
-}
+	}
+	
+	public void verifyEmail() {
+
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		User user = this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
+
+		user.setEmailVerified(true);
+
+		this.userRepository.save(user);
+	}
 }
