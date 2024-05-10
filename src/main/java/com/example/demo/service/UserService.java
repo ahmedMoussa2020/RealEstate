@@ -9,18 +9,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.domain.EmailExistException;
+import com.example.demo.exception.domain.EmailNotVerifiedException;
+import com.example.demo.exception.domain.UserNotFoundException;
 import com.example.demo.exception.domain.UsernameExistException;
 import com.example.demo.jpa.User;
 import com.example.demo.provider.ResourceProvider;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtService;
-import org.springframework.security.core.context.SecurityContextHolder;
-import com.example.demo.exception.domain.UserNotFoundException;
-
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import org.springframework.http.HttpHeaders;
 
 
 //This activity aims to implement a UserService class that contains business logic and calls UserDao to access the data stored in our User database table.
@@ -40,6 +44,9 @@ public class UserService {
 
 	@Autowired
 	AuthenticationManager authenticationManager;
+	
+	
+	
 
 	@Autowired
 	JwtService jwtService;
@@ -91,7 +98,7 @@ public class UserService {
 		});
 
 	}
-	
+
 	public void verifyEmail() {
 
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -103,4 +110,38 @@ public class UserService {
 
 		this.userRepository.save(user);
 	}
+
+	private static User isEmailVerified(User user) {
+
+		if (user.getEmailVerified().equals(false)) {
+			throw new EmailNotVerifiedException(String.format("Email requires verification, %s", user.getEmailId()));
+		}
+
+		return user;
+	}
+	
+
+	private Authentication authenticate(String username, String password) {
+		return this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+	}
+	
+
+	public User authenticate(User user) {
+
+		/* Spring Security Authentication. */
+		this.authenticate(user.getUsername(), user.getPassword());
+
+		/* Get User from the DB. */
+		return this.userRepository.findByUsername(user.getUsername()).map(UserService::isEmailVerified).get();
+	}
+	
+	
+
+	public HttpHeaders generateJwtHeader(String username) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(AUTHORIZATION, this.jwtService.generateJwtToken(username, this.provider.getJwtExpiration()));
+
+		return headers;
+	}
+	
 }

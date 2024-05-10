@@ -66,8 +66,8 @@ spring:
       
 # Email Settings
   mail:
-    username: ahmedobsiditesting@gmail.com
-    password: kwdksgfburgdvear
+    username: adnanrealrivergate@gmail.com
+    password: zeqpszlxrnxdijfe
     host: smtp.gmail.com
     port: 587
     protocol: smtp
@@ -124,5 +124,5 @@ spring:
       path: /h2-console
       settings:
         trace: false
-        web-allow-others: true 
+        web-allow-others: true
       

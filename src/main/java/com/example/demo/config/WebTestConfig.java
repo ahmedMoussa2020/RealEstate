@@ -13,14 +13,14 @@ import org.springframework.context.annotation.Bean;
 @Profile("test")
 public class WebTestConfig {
 
+
 	@Autowired
 	ResourceProvider resourceProvider;
-
+	
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	Server inMemoryH2DatabaseServer() throws SQLException {
-
 		return Server.createTcpServer(this.resourceProvider.getH2ServerParams());
-
+		
 	}
 
 }

@@ -18,12 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.jpa.User;
 import com.example.demo.service.UserService;
+import static org.springframework.http.HttpStatus.OK;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+
+
+//@CrossOrigin(exposedHeaders = "Authorization")
+//@RestController // annotation tells Spring that a class is a Controller and will process user requests.
+//@RequestMapping("/user") // annotation maps requests to handlers. In this case, requests with the /user
+							// parameter will be served by the UserController.
+
+
 
 @CrossOrigin(exposedHeaders = "Authorization")
-@RestController // annotation tells Spring that a class is a Controller and will process user
-				// requests.
-@RequestMapping("/user") // annotation maps requests to handlers. In this case, requests with the /user
-							// parameter will be served by the UserController.
+@RestController
+@RequestMapping("/user")
+
 public class UserController {
 
 //	This variable will be used from the UserController methods to print out the Controller's activity information in the console.
@@ -110,6 +120,22 @@ public class UserController {
 		logger.debug("Verifying Email");
 		//  method of the userService object to update the email verification status.	
 		this.userService.verifyEmail();
+	}
+	
+	@PostMapping("/login")
+	public ResponseEntity<User> login(@RequestBody User user) {
+		
+		logger.debug("Authenticating, username: {}, password: {}", user.getUsername(), user.getPassword());
+			
+		/* Spring Security Authentication. */
+		user = this.userService.authenticate(user);
+
+		/* Generate JWT and HTTP Header */
+		HttpHeaders jwtHeader = this.userService.generateJwtHeader(user.getUsername());
+					
+		logger.debug("User Authenticated, username: {}", user.getUsername());
+			
+		return new ResponseEntity<>(user, jwtHeader, OK);
 	}
 	
 	
