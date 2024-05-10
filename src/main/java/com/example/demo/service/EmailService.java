@@ -86,5 +86,7 @@ public class EmailService {
 
 		this.sendEmail(user, this.provider.getClientResetParam(), "reset_password", "Reset your password", this.provider.getClientResetExpiration());
 	}
+	
+	
 
 }
