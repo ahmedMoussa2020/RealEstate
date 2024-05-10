@@ -144,4 +144,15 @@ public class UserService {
 		return headers;
 	}
 	
+	public void sendResetPasswordEmail(String emailId) {
+
+		Optional<User> opt = this.userRepository.findByEmailId(emailId);
+
+		if (opt.isPresent()) {
+			this.emailService.sendResetPasswordEmail(opt.get());
+		} else {
+			logger.debug("Email doesn't exist, {}", emailId);
+		}
+	}
+	
 }
