@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.domain.PageResponse;
 import com.example.demo.jpa.Feed;
 import com.example.demo.service.FeedService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,5 +40,13 @@ public class FeedController {
 		logger.debug("Getting Feed, feedId: {}", feedId);
 
 		return this.feedService.getFeedById(feedId);
+	}
+	
+	@GetMapping("/user/{pageNum}/{pageSize}")
+	public PageResponse<Feed> getUserFeeds(@PathVariable int pageNum, @PathVariable int pageSize) {
+			
+		logger.debug("Getting User Feeds List, pageNum: {}, pageSize: {}", pageNum, pageSize);
+			
+		return this.feedService.getUserFeeds(pageNum, pageSize);	
 	}
 }
