@@ -25,7 +25,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import org.springframework.http.HttpHeaders;
-
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import org.springframework.util.StringUtils;
 
 //This activity aims to implement a UserService class that contains business logic and calls UserDao to access the data stored in our User database table.
 @Service
@@ -44,9 +46,6 @@ public class UserService {
 
 	@Autowired
 	AuthenticationManager authenticationManager;
-	
-	
-	
 
 	@Autowired
 	JwtService jwtService;
@@ -119,12 +118,10 @@ public class UserService {
 
 		return user;
 	}
-	
 
 	private Authentication authenticate(String username, String password) {
 		return this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 	}
-	
 
 	public User authenticate(User user) {
 
@@ -134,8 +131,6 @@ public class UserService {
 		/* Get User from the DB. */
 		return this.userRepository.findByUsername(user.getUsername()).map(UserService::isEmailVerified).get();
 	}
-	
-	
 
 	public HttpHeaders generateJwtHeader(String username) {
 		HttpHeaders headers = new HttpHeaders();
@@ -143,7 +138,7 @@ public class UserService {
 
 		return headers;
 	}
-	
+
 	public void sendResetPasswordEmail(String emailId) {
 
 		Optional<User> opt = this.userRepository.findByEmailId(emailId);
@@ -154,27 +149,56 @@ public class UserService {
 			logger.debug("Email doesn't exist, {}", emailId);
 		}
 	}
-	
-	
+
 	public void resetPassword(String password) {
 
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		User user = this.userRepository.findByUsername(username)
-					.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s",username)));
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
 
 		user.setPassword(this.passwordEncoder.encode(password));
 
 		this.userRepository.save(user);
 	}
-	
-	public User getUser() {
+
+	private void updateValue(Supplier<String> getter, Consumer<String> setter) {
+
+		Optional.ofNullable(getter.get())
+				// .filter(StringUtils::hasText)
+				.map(String::trim).ifPresent(setter);
+	}
+
+	private void updatePassword(Supplier<String> getter, Consumer<String> setter) {
+
+		Optional.ofNullable(getter.get()).filter(StringUtils::hasText).map(this.passwordEncoder::encode)
+				.ifPresent(setter);
+	}
+
+	private User updateUser(User user, User currentUser) {
+
+		this.updateValue(user::getFirstName, currentUser::setFirstName);
+		this.updateValue(user::getLastName, currentUser::setLastName);
+		this.updateValue(user::getPhone, currentUser::setPhone);
+		this.updateValue(user::getEmailId, currentUser::setEmailId);
+		this.updatePassword(user::getPassword, currentUser::setPassword);
+
+		return this.userRepository.save(currentUser);
+	}
+
+	public User updateUser(User user) {
 
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		/* Get User from the DB. */
-		return this.userRepository.findByUsername(username)
-	.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s",username)));
+		/* Validates the new email if provided */
+		this.userRepository.findByEmailId(user.getEmailId()).filter(u -> !u.getUsername().equals(username))
+				.ifPresent(u -> {
+					throw new EmailExistException(String.format("Email already exists, %s", u.getEmailId()));
+				});
+
+		/* Get and Update User */
+		return this.userRepository.findByUsername(username).map(currentUser -> this.updateUser(user, currentUser))
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
 	}
-	
+
 }

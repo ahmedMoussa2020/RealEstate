@@ -16,19 +16,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.jpa.User;
-import com.example.demo.service.UserService;
 import static org.springframework.http.HttpStatus.OK;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+
+import com.example.demo.jpa.User;
+import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 
 //@CrossOrigin(exposedHeaders = "Authorization")
 //@RestController // annotation tells Spring that a class is a Controller and will process user requests.
 //@RequestMapping("/user") // annotation maps requests to handlers. In this case, requests with the /user
-							// parameter will be served by the UserController.
-
-
+// parameter will be served by the UserController.
 
 @CrossOrigin(exposedHeaders = "Authorization")
 @RestController
@@ -104,48 +103,51 @@ public class UserController {
 
 	}
 
-
-	//  signup() method in the UserController class with @PostMapping("/signup") to indicate that it handles HTTP POST requests to the "/signup" endpoint of the REST API.
+	// signup() method in the UserController class with @PostMapping("/signup") to
+	// indicate that it handles HTTP POST requests to the "/signup" endpoint of the
+	// REST API.
 	@PostMapping("/signup")
 	public User signup(@RequestBody User user) {
 		logger.debug("Signing up, username: {}", user.getUsername());
 
-		// we have to pass the User object to the signup method in the UserService class, and return the User object returned by the signup() method in the UserService class.
+		// we have to pass the User object to the signup method in the UserService
+		// class, and return the User object returned by the signup() method in the
+		// UserService class.
 		return this.userService.signup(user);
 	}
-	
+
 	@GetMapping("/verify/email")
 	public void verifyEmail() {
-			
+
 		logger.debug("Verifying Email");
-		//  method of the userService object to update the email verification status.	
+		// method of the userService object to update the email verification status.
 		this.userService.verifyEmail();
 	}
-	
+
 	@PostMapping("/login")
 	public ResponseEntity<User> login(@RequestBody User user) {
-		
+
 		logger.debug("Authenticating, username: {}, password: {}", user.getUsername(), user.getPassword());
-			
+
 		/* Spring Security Authentication. */
 		user = this.userService.authenticate(user);
 
 		/* Generate JWT and HTTP Header */
 		HttpHeaders jwtHeader = this.userService.generateJwtHeader(user.getUsername());
-					
+
 		logger.debug("User Authenticated, username: {}", user.getUsername());
-			
+
 		return new ResponseEntity<>(user, jwtHeader, OK);
 	}
-	
+
 	@GetMapping("/reset/{emailId}")
 	public void sendResetPasswordEmail(@PathVariable String emailId) {
-			
-			logger.debug("Sending Reset Password Email, emailId: {}", emailId);
-			
-			this.userService.sendResetPasswordEmail(emailId);
+
+		logger.debug("Sending Reset Password Email, emailId: {}", emailId);
+
+		this.userService.sendResetPasswordEmail(emailId);
 	}
-	
+
 	@PostMapping("/reset")
 	public void passwordReset(@RequestBody JsonNode json) {
 
@@ -153,14 +155,5 @@ public class UserController {
 
 		this.userService.resetPassword(json.get("password").asText());
 	}
-	
-	@GetMapping("/get")
-	public User getUser() {
-			
-		logger.debug("Getting User Data");
-			
-		return this.userService.getUser();
-	}
-	
 
 }
