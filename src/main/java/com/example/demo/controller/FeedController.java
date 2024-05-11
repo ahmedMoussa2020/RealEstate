@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.PageResponse;
 import com.example.demo.jpa.Feed;
+import com.example.demo.jpa.FeedMetaData;
 import com.example.demo.service.FeedService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,5 +57,13 @@ public class FeedController {
 		logger.debug("Getting Other Users Feeds List, pageNum: {}, pageSize: {}", pageNum, pageSize);
 			
 		return this.feedService.getOtherUsersFeeds(pageNum, pageSize);	
+	}
+	
+	@PostMapping("/meta/{feedId}")
+	public FeedMetaData createFeedMetaData(@PathVariable int feedId, @RequestBody FeedMetaData meta) {
+			
+		logger.debug("Creating FeedMetaData, feedId: {}", feedId);
+			
+		return this.feedService.createFeedMetaData(feedId, meta);
 	}
 }
