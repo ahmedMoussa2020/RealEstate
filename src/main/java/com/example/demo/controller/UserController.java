@@ -20,26 +20,18 @@ import static org.springframework.http.HttpStatus.OK;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
+import com.example.demo.jpa.Profile;
 import com.example.demo.jpa.User;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 
-//@CrossOrigin(exposedHeaders = "Authorization")
-//@RestController // annotation tells Spring that a class is a Controller and will process user requests.
-//@RequestMapping("/user") // annotation maps requests to handlers. In this case, requests with the /user
-// parameter will be served by the UserController.
 
 @CrossOrigin(exposedHeaders = "Authorization")
 @RestController
 @RequestMapping("/user")
-
 public class UserController {
 
-//	This variable will be used from the UserController methods to print out the Controller's activity information in the console.
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-	// The @Autowired annotation tells Spring to inject a UserService instance into
-	// the userService variable:
 
 	@Autowired
 	UserService userService;
@@ -47,38 +39,22 @@ public class UserController {
 	@GetMapping("/test")
 	public String testController() {
 
-		// Call the logger's debug() method from the testController() method to print
-		// out that the method was invoked, as shown below.
 		logger.debug("The testController() method was invoked!");
-
-		// Return the string "The FeedApp application is up and running" from the
-		// testController() method, as shown below.
-
-		return "The Adnan Real Estate application is up and running";
+		return "The FeedApp application is up and running";
 	}
 
 	@GetMapping("/")
-	// listUsers() method to get all the existing Users in the database:
 	public List<User> listUsers() {
 		logger.debug("The listUsers() method was invoked!");
 		return this.userService.listUsers();
 	}
 
-	// findByUsername() method to get an existing User from the database:
 	@GetMapping("/{username}")
-
-	// The @PathVariable annotation handles template variables in the request URI
-	// mapping and sets them as method parameters:
-
 	public Optional<User> findByUsername(@PathVariable String username) {
 
 		logger.debug("The findByUsername() method was invoked!, username={}", username);
 		return this.userService.findByUsername(username);
 	}
-
-	// createUser() method to create a User in the database:
-	// The @PathVariable annotation handles template variables in the request URI
-	// mapping and sets them as method parameters:
 
 	@GetMapping("/{first}/{last}/{username}/{password}/{phone}/{emailId}")
 	public String createUser(@PathVariable String first, @PathVariable String last, @PathVariable String username,
@@ -103,24 +79,20 @@ public class UserController {
 
 	}
 
-	// signup() method in the UserController class with @PostMapping("/signup") to
-	// indicate that it handles HTTP POST requests to the "/signup" endpoint of the
-	// REST API.
 	@PostMapping("/signup")
 	public User signup(@RequestBody User user) {
+
 		logger.debug("Signing up, username: {}", user.getUsername());
 
-		// we have to pass the User object to the signup method in the UserService
-		// class, and return the User object returned by the signup() method in the
-		// UserService class.
 		return this.userService.signup(user);
+
 	}
 
 	@GetMapping("/verify/email")
 	public void verifyEmail() {
 
 		logger.debug("Verifying Email");
-		// method of the userService object to update the email verification status.
+
 		this.userService.verifyEmail();
 	}
 
@@ -155,13 +127,31 @@ public class UserController {
 
 		this.userService.resetPassword(json.get("password").asText());
 	}
-	
+
+	@GetMapping("/get")
+	public User getUser() {
+
+		logger.debug("Getting User Data");
+
+		return this.userService.getUser();
+	}
+
 	@PostMapping("/update")
 	public User updateUser(@RequestBody User user) {
-			
+
 		logger.debug("Updating User Data");
-			
+
 		return this.userService.updateUser(user);
+	}
+
+	// This method will call the updateUserProfile() method of the UserService to
+	// retrieve the updated user's profile details.
+	@PostMapping("/update/profile")
+	public User updateUserProfile(@RequestBody Profile profile) {
+
+		logger.debug("Updating User Profile Data, Profile: {}", profile.toString());
+
+		return this.userService.updateUserProfile(profile);
 	}
 
 }

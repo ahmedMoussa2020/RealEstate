@@ -11,3 +11,4 @@ import com.example.demo.jpa.FeedMetaData;
 public interface FeedMetaDataRepository extends JpaRepository<FeedMetaData, Integer> {
 
 }
+

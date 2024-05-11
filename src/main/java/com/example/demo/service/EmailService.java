@@ -57,7 +57,7 @@ public class EmailService {
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
 			/* Set Email Information */
-			helper.setFrom(this.emailFrom, "GOLDEN STREET RESIDENCY\n");
+			helper.setFrom(this.emailFrom, "FeedApp - Obsidi Academy");
 			helper.setSubject(emailSubject);
 			helper.setText(process, true);
 			helper.setTo(user.getEmailId());
@@ -72,7 +72,7 @@ public class EmailService {
 			this.logger.error("Error while Sending Email, Username: " + user.getUsername(), ex);
 		}
 	}
-
+	
 	@Async
 	public void sendVerificationEmail(User user) {
 
@@ -80,13 +80,11 @@ public class EmailService {
 				String.format("Welcome %s %s", user.getFirstName(), user.getLastName()),
 				this.provider.getClientVerifyExpiration());
 	}
-
+	
 	@Async
 	public void sendResetPasswordEmail(User user) {
-
+			
 		this.sendEmail(user, this.provider.getClientResetParam(), "reset_password", "Reset your password", this.provider.getClientResetExpiration());
-	}
-	
-	
+	}	
 
 }

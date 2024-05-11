@@ -1,35 +1,37 @@
 package com.example.demo.service;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.example.demo.exception.domain.EmailExistException;
 import com.example.demo.exception.domain.EmailNotVerifiedException;
 import com.example.demo.exception.domain.UserNotFoundException;
 import com.example.demo.exception.domain.UsernameExistException;
+import com.example.demo.jpa.Profile;
 import com.example.demo.jpa.User;
 import com.example.demo.provider.ResourceProvider;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtService;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import org.springframework.http.HttpHeaders;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import org.springframework.util.StringUtils;
 
 //This activity aims to implement a UserService class that contains business logic and calls UserDao to access the data stored in our User database table.
+
 @Service
 public class UserService {
 
@@ -162,21 +164,34 @@ public class UserService {
 		this.userRepository.save(user);
 	}
 
-	private void updateValue(Supplier<String> getter, Consumer<String> setter) {
+	public User getUser() {
 
-		Optional.ofNullable(getter.get())
-				// .filter(StringUtils::hasText)
-				.map(String::trim).ifPresent(setter);
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		/* Get User from the DB. */
+		return this.userRepository.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
 	}
 
+
+	private void updateValue(Supplier<String> getter, Consumer<String> setter) {
+		
+		Optional.ofNullable(getter.get())
+		        //.filter(StringUtils::hasText)
+			       .map(String::trim)
+			       .ifPresent(setter);
+	}
+	
 	private void updatePassword(Supplier<String> getter, Consumer<String> setter) {
 
-		Optional.ofNullable(getter.get()).filter(StringUtils::hasText).map(this.passwordEncoder::encode)
-				.ifPresent(setter);
+	    Optional.ofNullable(getter.get())
+	               .filter(StringUtils::hasText)
+	               .map(this.passwordEncoder::encode)
+				   .ifPresent(setter);
 	}
-
-	private User updateUser(User user, User currentUser) {
-
+	
+private User updateUser(User user, User currentUser) {
+	    
 		this.updateValue(user::getFirstName, currentUser::setFirstName);
 		this.updateValue(user::getLastName, currentUser::setLastName);
 		this.updateValue(user::getPhone, currentUser::setPhone);
@@ -184,20 +199,51 @@ public class UserService {
 		this.updatePassword(user::getPassword, currentUser::setPassword);
 
 		return this.userRepository.save(currentUser);
-	}
+}
 
-	public User updateUser(User user) {
+public User updateUser(User user) {
+	
+	String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+	/* Validates the new email if provided */
+	this.userRepository.findByEmailId(user.getEmailId())
+                            .filter(u->!u.getUsername().equals(username))
+                            .ifPresent(u -> {throw new EmailExistException(String.format("Email already exists, %s", u.getEmailId()));});
+	    
+	/* Get and Update User */	
+	return this.userRepository.findByUsername(username)
+				            .map(currentUser -> this.updateUser(user, currentUser))
+				            .orElseThrow(()-> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
+}
+	
+
+	private User updateUserProfile(Profile profile, User user) {
+
+		Profile currentProfile = user.getProfile();
+
+		if (Optional.ofNullable(currentProfile).isPresent()) {
+
+			this.updateValue(profile::getHeadline, currentProfile::setHeadline);
+			this.updateValue(profile::getBio, currentProfile::setBio);
+			this.updateValue(profile::getCity, currentProfile::setCity);
+			this.updateValue(profile::getCountry, currentProfile::setCountry);
+			this.updateValue(profile::getPicture, currentProfile::setPicture);
+		} else {
+			user.setProfile(profile);
+			profile.setUser(user);
+		}
+
+		return this.userRepository.save(user);
+	}
+	
+	
+
+	public User updateUserProfile(Profile profile) {
 
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		/* Validates the new email if provided */
-		this.userRepository.findByEmailId(user.getEmailId()).filter(u -> !u.getUsername().equals(username))
-				.ifPresent(u -> {
-					throw new EmailExistException(String.format("Email already exists, %s", u.getEmailId()));
-				});
-
 		/* Get and Update User */
-		return this.userRepository.findByUsername(username).map(currentUser -> this.updateUser(user, currentUser))
+		return this.userRepository.findByUsername(username).map(user -> this.updateUserProfile(profile, user))
 				.orElseThrow(() -> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
 	}
 
