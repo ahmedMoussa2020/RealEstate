@@ -155,5 +155,13 @@ public class UserController {
 
 		this.userService.resetPassword(json.get("password").asText());
 	}
+	
+	@PostMapping("/update")
+	public User updateUser(@RequestBody User user) {
+			
+		logger.debug("Updating User Data");
+			
+		return this.userService.updateUser(user);
+	}
 
 }
