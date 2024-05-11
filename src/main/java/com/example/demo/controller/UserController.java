@@ -21,7 +21,7 @@ import com.example.demo.service.UserService;
 import static org.springframework.http.HttpStatus.OK;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-
+import com.fasterxml.jackson.databind.JsonNode;
 
 //@CrossOrigin(exposedHeaders = "Authorization")
 //@RestController // annotation tells Spring that a class is a Controller and will process user requests.
@@ -146,6 +146,13 @@ public class UserController {
 			this.userService.sendResetPasswordEmail(emailId);
 	}
 	
+	@PostMapping("/reset")
+	public void passwordReset(@RequestBody JsonNode json) {
+
+		logger.debug("Resetting Password, password: {}", json.get("password").asText());
+
+		this.userService.resetPassword(json.get("password").asText());
+	}
 	
 
 }
