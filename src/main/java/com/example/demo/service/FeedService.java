@@ -16,6 +16,11 @@ import com.example.demo.jpa.User;
 import com.example.demo.repository.FeedMetaDataRepository;
 import com.example.demo.repository.FeedRepository;
 import com.example.demo.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import com.example.demo.domain.PageResponse;
+
 
 @Service
 public class FeedService {
@@ -53,4 +58,16 @@ public class FeedService {
 				.orElseThrow(() -> new FeedNotFoundException(String.format("Feed doesn't exist, %d", feedId)));
 	}
 
+	
+	public PageResponse<Feed> getUserFeeds(int pageNum, int pageSize) {
+
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();		
+			
+		User user = this.userRepository.findByUsername(username)
+		             .orElseThrow(()-> new UserNotFoundException(String.format("Username doesn't exist, %s", username)));
+					
+		Page<Feed> paged = this.feedRepository.findByUser(user, PageRequest.of(pageNum, pageSize, Sort.by("feedId").descending()));
+			
+		return new PageResponse<Feed>(paged);
+	}
 }
