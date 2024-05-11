@@ -5,8 +5,6 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-
-// This activity aims to implement a UserMapper class to map the data from a JDBC ResultSet to populate our new UserBean object.
 public class UserMapper implements RowMapper<UserBean> {
 
 	@Override

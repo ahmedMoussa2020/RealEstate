@@ -16,11 +16,12 @@ public class WebTestConfig {
 
 	@Autowired
 	ResourceProvider resourceProvider;
-	
+
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	Server inMemoryH2DatabaseServer() throws SQLException {
-		return Server.createTcpServer(this.resourceProvider.getH2ServerParams());
-		
+			
+		    return Server.createTcpServer(this.resourceProvider.getH2ServerParams());
+
 	}
 
 }

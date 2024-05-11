@@ -104,5 +104,4 @@ public class JwtService {
 				.verify(token).getSubject();
 	}
 
-
 }

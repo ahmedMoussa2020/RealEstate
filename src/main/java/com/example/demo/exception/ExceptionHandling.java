@@ -44,7 +44,7 @@ import jakarta.persistence.NoResultException;
 
 // class is a RESTful web service controller and it combines the function of the controller and responsebobdy
 @RestController
-@RestControllerAdvice // annotation that marks a class as a global exception handler for RESTful web services.
+@RestControllerAdvice
 public class ExceptionHandling implements ErrorController {
 
 	final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -61,9 +61,6 @@ public class ExceptionHandling implements ErrorController {
 	private static final String NO_MAPPING_EXIST_URL = "There is no mapping for this URL";
 	private static final String ERROR_PATH = "/error";
 
-
-
-
 	private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
 	    return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus,
 	    			httpStatus.getReasonPhrase().toUpperCase(), message), httpStatus);
@@ -74,42 +71,34 @@ public class ExceptionHandling implements ErrorController {
 	    return this.createHttpResponse(BAD_REQUEST, TOKEN_DECODE_ERROR);
 	}
 
-
 	@ExceptionHandler(DisabledException.class)
 	public ResponseEntity<HttpResponse> accountDisabledException() {
 		return this.createHttpResponse(BAD_REQUEST, ACCOUNT_DISABLED);
 	}
 
-
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<HttpResponse> badCredentialsException() {
-	    return this.createHttpResponse(BAD_REQUEST, INCORRECT_CREDENTIALS);
+		return this.createHttpResponse(BAD_REQUEST, INCORRECT_CREDENTIALS);
 	}
-
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<HttpResponse> accessDeniedException() {
 		return this.createHttpResponse(FORBIDDEN, NOT_ENOUGH_PERMISSION);
 	}
 
-
-
-
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<HttpResponse> authenticationException() {
-	    return this.createHttpResponse(FORBIDDEN, NOT_AUTHENTICATED);
+		return this.createHttpResponse(FORBIDDEN, NOT_AUTHENTICATED);
 	}
-
 
 	@ExceptionHandler(LockedException.class)
 	public ResponseEntity<HttpResponse> lockedException() {
-	    return this.createHttpResponse(UNAUTHORIZED, ACCOUNT_LOCKED);
+		return this.createHttpResponse(UNAUTHORIZED, ACCOUNT_LOCKED);
 	}
-
 
 	@ExceptionHandler(TokenExpiredException.class)
 	public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException ex) {
-	    return this.createHttpResponse(UNAUTHORIZED, TOKEN_EXPIRED_ERROR);
+		return this.createHttpResponse(UNAUTHORIZED, TOKEN_EXPIRED_ERROR);
 	}
 
 	@ExceptionHandler(EmailExistException.class)
@@ -127,16 +116,14 @@ public class ExceptionHandling implements ErrorController {
 		return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
 	}
 
-
 	@ExceptionHandler(EmailNotFoundException.class)
 	public ResponseEntity<HttpResponse> emailNotFoundException(EmailNotFoundException ex) {
 		return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
 	}
 
-
 	@ExceptionHandler(EmailNotVerifiedException.class)
 	public ResponseEntity<HttpResponse> emailNotVerifiedException(EmailNotVerifiedException ex) {
-	    return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
+		return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
 	}
 
 	@ExceptionHandler(UserNotFoundException.class)
@@ -144,10 +131,9 @@ public class ExceptionHandling implements ErrorController {
 		return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
 	}
 
-
 	@ExceptionHandler(FeedNotFoundException.class)
 	public ResponseEntity<HttpResponse> feedNotFoundException(FeedNotFoundException ex) {
-	    return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
+		return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
 	}
 
 	@ExceptionHandler(FeedNotUserException.class)
@@ -155,33 +141,27 @@ public class ExceptionHandling implements ErrorController {
 		return this.createHttpResponse(BAD_REQUEST, ex.getMessage());
 	}
 
-
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
-	    HttpMethod supportedMethod = Objects.requireNonNull(ex.getSupportedHttpMethods()).iterator().next();
-	    return this.createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod));
+		HttpMethod supportedMethod = Objects.requireNonNull(ex.getSupportedHttpMethods()).iterator().next();
+		return this.createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod));
 	}
-
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
-	    logger.error(exception.getMessage(),exception);
-	    return this.createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+		logger.error(exception.getMessage(), exception);
+		return this.createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
 	}
-
 
 	@ExceptionHandler(NoResultException.class)
 	public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
-	    logger.error(exception.getMessage());
-	    return this.createHttpResponse(NOT_FOUND, exception.getMessage());
+		logger.error(exception.getMessage());
+		return this.createHttpResponse(NOT_FOUND, exception.getMessage());
 	}
-
+	
 	@GetMapping(ERROR_PATH)
 	public ResponseEntity<HttpResponse> notFound404() throws Exception {
 	    return this.createHttpResponse(NOT_FOUND, NO_MAPPING_EXIST_URL);
 	}
-
-
 }
-
 

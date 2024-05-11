@@ -16,7 +16,6 @@ import com.example.demo.provider.ResourceProvider;
 import com.example.demo.security.JwtService;
 
 import jakarta.mail.internet.MimeMessage;
-
 @Service
 public class EmailService {
 

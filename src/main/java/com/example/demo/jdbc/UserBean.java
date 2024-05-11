@@ -12,7 +12,8 @@ public class UserBean {
 	private String phone;
 	private String emailId;
 	private Boolean emailVerified;
-	private Timestamp createdOn;
+	private java.sql.Timestamp createdOn;
+	
 	public Integer getUserId() {
 		return userId;
 	}
@@ -61,19 +62,18 @@ public class UserBean {
 	public void setEmailVerified(Boolean emailVerified) {
 		this.emailVerified = emailVerified;
 	}
-	public Timestamp getCreatedOn() {
+	public java.sql.Timestamp getCreatedOn() {
 		return createdOn;
 	}
-	public void setCreatedOn(Timestamp createdOn) {
-		this.createdOn = createdOn;
+	public void setCreatedOn(java.sql.Timestamp timestamp) {
+		this.createdOn = timestamp;
 	}
 	@Override
 	public String toString() {
 		return "UserBean [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", username="
 				+ username + ", password=" + password + ", phone=" + phone + ", emailId=" + emailId + ", emailVerified="
-				+ emailVerified + ", createdOn=" + createdOn + "]";
+				+ emailVerified + "]";
 	}
-
-
-
+	
+	
 }
