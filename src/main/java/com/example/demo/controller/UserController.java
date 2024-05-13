@@ -25,7 +25,6 @@ import com.example.demo.jpa.User;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 
-
 @CrossOrigin(exposedHeaders = "Authorization")
 @RestController
 @RequestMapping("/user")
