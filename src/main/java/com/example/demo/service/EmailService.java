@@ -62,7 +62,7 @@ public class EmailService {
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
 
 			/* Set Email Information */
-			helper.setFrom(this.emailFrom, "FeedApp - Obsidi Academy");
+			helper.setFrom(this.emailFrom, "River Gate - Residental");
 			helper.setSubject(emailSubject);
 			helper.setText(process, true);
 			helper.setTo(user.getEmailId());
