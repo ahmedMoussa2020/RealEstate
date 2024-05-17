@@ -50,7 +50,7 @@ spring:
        
 # Database Settings
   datasource:
-    url: jdbc:postgresql://localhost:5432/adnan
+    url: jdbc:postgresql://localhost:5432/AdnanModal
     username: postgres
     password: ahmed4839
     hikari:
@@ -90,7 +90,7 @@ spring:
   
 # Database Settings 
   datasource:
-    url: jdbc:postgresql://localhost:5432/adnan
+    url: jdbc:postgresql://localhost:5432/AdnanModal
     username: postgres
     password: ahmed4839
     hikari:
